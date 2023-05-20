@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Datos de Consumo</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Cooleche</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('informe') }}">Informe</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('datos_consumo') }}">Datos de consumo</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+  <div class="container">
+    <h1>Datos de Consumo</h1>
+    <form action="/consultar" method="POST">
+      <div class="form-group">
+        <label for="placa-input">Placa:</label>
+        <input type="text" class="form-control" id="placa" name="placa" required>
+      </div>
+      <div class="form-group">
+            <label for="tipo-combustible-select">Tipo de Combustible:</label>
+            <select class="form-control" id="tipo_combustible" name="tipo_combustible" required>
+            <option value=""></option>
+            <option value="gasolina">Gasolina</option>
+            <option value="diesel">Diesel</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="intervalo">Intervalo de Tiempo:</label>
+        <select class="form-control" id="intervalo" name="intervalo" onchange="handleIntervaloChange()" required>
+            <option value=""></option>
+            <option value="dia">Día</option>
+            <option value="semana">Semana</option>
+            <option value="mes">Mes</option>
+        </select>
+    </div>
+    <div id="fecha-container" style="display: none;">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha">
+    </div>
+    <button class="btn btn-primary" type="submit">Consultar</button>
+    </form>
+
+    <script>
+  function handleIntervaloChange() {
+    var intervaloSelect = document.getElementById("intervalo");
+    var fechaContainer = document.getElementById("fecha-container");
+
+    if (intervaloSelect.value === "dia") {
+      fechaContainer.style.display = "block";
+    } else {
+      fechaContainer.style.display = "none";
+    }
+  }
+</script>
+
+    <div class="mt-4">
+      {% if resultados %}
+      <h2>Resultados</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Placa</th>
+            <th>Tipo de Combustible</th>
+            <th>Intervalo de Tiempo</th>
+            <th>Litros Utilizados</th>
+            <th>Costo Total</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for resultado in resultados %}
+            <tr>
+              <td>{{ resultado.placa }}</td>
+              <td>{{ resultado.tipo_combustible }}</td>
+              <td>{{ resultado.intervalo }}</td>
+              <td>{{ '%.3f' % resultado.litros_utilizados }}</td>
+              <td>{{ '%.2f' % resultado.costo_total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

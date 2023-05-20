@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Informe de Consumo</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Cooleche</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('informe') }}">Informe general</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('datos_consumo') }}">Datos de consumo</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+  <div class="container-fluid">
+    <h1>Informe General por día</h1>
+    <div class="form-group mb-3">
+      <label for="fecha-input">Fecha:</label>
+      <div class="input-group">
+        <input type="text" class="form-control datepicker" id="fecha-input" name="fecha" readonly>
+        <div class="input-group-append">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+      </div>
+    </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Placa</th>
+          <th>Conductor</th>
+          <th>Odómetro</th>
+          <th>Departamento</th>
+          <th>Litros</th>
+          <th>Tipo de Combustible</th>
+          <th>Descripción</th>
+          <th>Factura</th>
+          <th>Precio del Gas</th>
+          <th>Total de la Venta</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for consumo in registros_consumo %}
+        <tr>
+          <td>{{ consumo.id }}</td>
+          <td>{{ consumo.placa }}</td>
+          <td>{{ consumo.conductor }}</td>
+          <td>{{ consumo.odometro }}</td>
+          <td>{{ consumo.departamento }}</td>
+          <td>{{ consumo.litros }}</td>
+          <td>{{ consumo.tipo_combustible }}</td>
+          <td>{{ consumo.descripcion }}</td>
+          <td>{{ consumo.factura }}</td>
+          <td>{{ consumo.precio_gas }}</td>
+          <td>{{ consumo.total_venta }}</td>
+          <td>{{ consumo.fecha }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('.datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+      }).on('changeDate', function() {
+        var selectedDate = $(this).val();
+        // Redirigir a la página con la fecha seleccionada
+        window.location.href = '/informe?fecha=' + selectedDate;
+      });
+    });
+  </script>
+</body>
+</html>
