@@ -47,6 +47,10 @@ def login():
             if user and check_password_hash(user['contraseña'], password):
                 # Almacenar el usuario en la sesión
                 session['user'] = user
+
+                tipouser = user['tipo_usuario']
+                session['tipo_usuario'] = tipouser
+
                 return redirect(url_for('index'))
             else:
                 return render_template('login.html', error='Credenciales incorrectas')
@@ -62,7 +66,13 @@ def logout():
     return redirect(url_for('login'))
 #fin de login
 
+@app.context_processor
+def inject_tipo_usuario():
+    # Obtener el tipo de usuario desde la sesión
+    tipo_usuario = session.get('tipo_usuario')
 
+    # Retornar un diccionario con la variable que quieres pasar a todas las plantillas
+    return {'tipo_usuario': tipo_usuario}
 
 
 @app.route('/')
