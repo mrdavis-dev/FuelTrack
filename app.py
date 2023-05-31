@@ -398,5 +398,44 @@ def eliminar_usuario(id):
 
     return redirect(url_for('usuarios'))
 
+
+#cosnulta para kilometrajes
+@app.route('/consulta_vehiculo', methods=['GET', 'POST'])
+@login_required
+def consulta_vehiculo():
+    if request.method == 'POST':
+        # Obtener los valores enviados desde el formulario
+        placa = request.form['placa']
+        fecha_inicio = request.form['fecha_inicio']
+        fecha_fin = request.form['fecha_fin']
+
+        # Realizar las consultas a la base de datos
+        try:
+            db = mysql.connector.connect(**db_config)
+            cursor = db.cursor(dictionary=True)
+
+            # Consulta 1: Calcular los kilómetros recorridos por un vehículo en el rango de fechas
+            cursor.execute("SELECT MAX(odometro) AS odometro_inicio, MIN(odometro) AS odometro_fin FROM consumo WHERE placa = %s AND fecha BETWEEN %s AND %s", (placa, fecha_inicio, fecha_fin))
+            result = cursor.fetchone()
+            odometro_inicio = result['odometro_inicio']
+            odometro_fin = result['odometro_fin']
+            total_km = odometro_fin - odometro_inicio
+
+            # Consulta 2: Calcular el consumo de gasolina por rango de fechas
+            cursor.execute("SELECT SUM(litros) AS total_litros FROM consumo WHERE fecha BETWEEN %s AND %s", (fecha_inicio, fecha_fin))
+            total_litros = cursor.fetchone()['total_litros']
+
+            # Consulta 3: Calcular el costo total de la gasolina en el rango de fechas
+            cursor.execute("SELECT SUM(consumo.litros * consumo.precio_gas) AS total_costo FROM consumo WHERE consumo.fecha BETWEEN %s AND %s", (fecha_inicio, fecha_fin))
+            total_costo = cursor.fetchone()['total_costo']
+
+            return render_template('consulta_vehiculo.html', total_km=total_km, total_litros=total_litros, total_costo=total_costo)
+        except mysql.connector.Error as error:
+            print("Error al conectar a la base de datos: {}".format(error))
+            return render_template('error.html')
+    else:
+        return render_template('consulta_vehiculo.html')
+    
+
 if __name__ == '__main__':
     app.run()
